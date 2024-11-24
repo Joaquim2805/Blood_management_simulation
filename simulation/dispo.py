@@ -39,7 +39,7 @@ def simulation_disp(N, sizes, month):
         # Moyenne ajustée par la taille du centre et la saison
         mean = base_mean * size * seasonal_factor
         std = base_std * size  # L'écart type augmente avec la taille
-        disponibilités.append(max(0, np.random.normal(mean, std)))  # Disponibilité >= 0
+        disponibilités.append(int(max(0, np.random.normal(mean, std))))  # Disponibilité >= 0
     
     return np.array(disponibilités)
 

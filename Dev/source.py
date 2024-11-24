@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def recolte_sang(N,K,Q,S_min,alpha,locations,dispo):
+def recolte_sang(N,K,Q,S_min,alpha,locations,dispo,debug):
     
     distances = np.linalg.norm(locations[:, np.newaxis] - locations[np.newaxis, :], axis=2)
 
@@ -85,32 +85,54 @@ def recolte_sang(N,K,Q,S_min,alpha,locations,dispo):
 
     # Affichage des résultats
     if model.status == GRB.OPTIMAL:
+
         print("\nSolution optimale trouvée :")
+        
+        total_quantity = 0  # Initialiser la quantité totale collectée
+        quantity_per_center = {i: 0 for i in range(N)}  # Dictionnaire pour stocker la quantité récoltée par chaque centre
+
+        
+        for k in range(K):
+            if z[k].X > 0.5:  # Si le camion k est utilisé
+
+                print(f"\nCamion {k + 1} utilisé :") if debug else None
+                for i in range(N):
+                    for j in range(N):
+                        if x[i, j, k].X > 0.5:  # Si le camion parcourt l'arc (i, j)
+                            print(f"  Parcours de {i} à {j} avec distance {distances[i, j]:.2f} et quantité collectée {q[i, k].X:.2f}")if debug else None
+                    quantity_per_center[i] += q[i, k].X
+
+                # Quantité totale collectée par ce camion
+                camion_quantity = sum(q[i, k].X for i in range(N))
+                print(f"Quantité totale collectée par le camion {k + 1}: {camion_quantity:.2f}")if debug else None
+                
+                # Ajouter cette quantité à la quantité totale
+                total_quantity += camion_quantity
+                
+        
+        # Afficher la quantité totale collectée par tous les camions
+        print(f"\nQuantité totale collectée par tous les camions : {total_quantity:.2f}")if debug else None
+
+    if debug : 
+        # Visualisation
+        plt.figure(figsize=(10, 7))
+        plt.scatter(locations[:, 0], locations[:, 1], c='red', label='Centres de collecte')
+        plt.scatter(locations[0, 0], locations[0, 1], c='blue', marker='s', label='Dépôt')
+
         for k in range(K):
             if z[k].X > 0.5:
-                print(f"\nCamion {k + 1} utilisé :")
                 for i in range(N):
                     for j in range(N):
                         if x[i, j, k].X > 0.5:
-                            print(f"  Parcours de {i} à {j} avec distance {distances[i, j]:.2f}",q[i, k].X)
-                print(f"Quantité totale collectée par le camion {k + 1}: {sum(q[i, k].X for i in range(N)):.2f}")
-
-    # Visualisation
-    plt.figure(figsize=(10, 7))
-    plt.scatter(locations[:, 0], locations[:, 1], c='red', label='Centres de collecte')
-    plt.scatter(locations[0, 0], locations[0, 1], c='blue', marker='s', label='Dépôt')
-
-    for k in range(K):
-        if z[k].X > 0.5:
-            for i in range(N):
-                for j in range(N):
-                    if x[i, j, k].X > 0.5:
-                        plt.plot([locations[i, 0], locations[j, 0]], [locations[i, 1], locations[j, 1]],
-                                 label=f'Camion {k + 1}' if i == 0 and j == 1 else "")
+                            plt.plot([locations[i, 0], locations[j, 0]], [locations[i, 1], locations[j, 1]],
+                                    label=f'Camion {k + 1}' if i == 0 and j == 1 else "")
+        
+        plt.legend()
+        plt.title("Trajets des camions pour la collecte de sang")
+        plt.xlabel("X")
+        plt.ylabel("Y")
+        plt.show()
     
-    plt.legend()
-    plt.title("Trajets des camions pour la collecte de sang")
-    plt.xlabel("X")
-    plt.ylabel("Y")
-    plt.show()
+    return total_quantity,quantity_per_center,model.objVal
+
 
