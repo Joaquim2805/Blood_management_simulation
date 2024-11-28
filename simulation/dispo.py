@@ -23,14 +23,14 @@ def simulation_disp(N, sizes, month):
         raise ValueError("La taille de 'sizes' doit correspondre au nombre de centres N.")
     
     # Calcul du facteur saisonnier continu (ajusté pour maximiser en été)
-    seasonal_factor = 1 + 0.3 * np.cos(2 * np.pi * (month - 6) / 12)
+    seasonal_factor = 1 + 0.48 * np.cos(2 * np.pi * (month - 6) / 12)
     # Exemple :
     # - En été (mois 6, 7, 8), seasonal_factor ≈ 1.3
     # - En hiver (mois 12, 1, 2), seasonal_factor ≈ 0.7
     # - Printemps/automne : intermediate ≈ 1.0
     
     # Paramètres de base pour la distribution normale
-    base_mean = 100  # Moyenne de base de la disponibilité
+    base_mean = 110  # Moyenne de base de la disponibilité
     base_std = 20    # Écart type de base de la disponibilité
     
     # Calcul des disponibilités
