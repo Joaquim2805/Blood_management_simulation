@@ -8,12 +8,6 @@ def PFA_optimization(complete_sim):
 
     # Grouper les mois en 4 saisons
     # Hiver (Jan, Fev, Mar), Printemps (Avr, Mai, Juin), Été (Juil, Août, Sep), Automne (Oct, Nov, Déc)
-    seasons = {
-        "Hiver": [0, 1, 2],   # Janvier, Février, Mars
-        "Printemps": [3, 4, 5],  # Avril, Mai, Juin
-        "Été": [6, 7, 8],     # Juillet, Août, Septembre
-        "Automne": [9, 10, 11]  # Octobre, Novembre, Décembre
-    }
 
     # Itération sur les combinaisons possibles des valeurs de θ_target pour chaque saison
     best_cost = float('inf')
