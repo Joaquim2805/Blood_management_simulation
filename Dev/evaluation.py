@@ -18,8 +18,7 @@ def complete_sim_with_peremption(t_low, t_target):
     K = 6  # Nombre de camions disponibles
     Q = 500  # Capacité maximale de chaque camion
     alpha = 1  # Coût fixe par camion déployé
-    stock_file = []  # File d'attente pour gérer la péremption
-    stock_ages = []  # Liste pour suivre l'âge des stocks
+
     locations = np.array([
         [0, 0],  # Dépôt
         [2, 3],
@@ -28,6 +27,8 @@ def complete_sim_with_peremption(t_low, t_target):
         [6, 5],
         [3, 2]
     ])
+    stock_file = []  # File d'attente pour gérer la péremption
+    stock_ages = []  # Liste pour suivre l'âge des stocks
 
     final_cost = []
     stock_history = []
