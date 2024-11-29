@@ -27,7 +27,7 @@ This project models a two-stage stochastic optimization problem for blood collec
 
 ## **Key Features**
 
-- **MILP Model with Gurobi**: Solve vehicle routing and blood collection problems with capacity and demand constraints.
+- **Modelization with Gurobi**: Solve vehicle routing and blood collection problems with capacity and demand constraints.
 - **Stochastic Simulations**: Model uncertainty in hospital demand and center availability.
 - **Perishability Integration**: Automatically update and remove expired blood from inventory.
 
