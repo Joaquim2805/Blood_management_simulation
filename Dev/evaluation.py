@@ -3,6 +3,7 @@ from simulation.dispo import simulation_disp
 from politics.PFA import PFA
 import numpy as np
 from source import recolte_sang
+from politics.DL import direct_lookahead
 
 
 
@@ -11,22 +12,8 @@ from source import recolte_sang
 
 
 
+def complete_sim_with_peremption(t_low, t_target,locations,N,K,Q,alpha,policy,a,b):
 
-def complete_sim_with_peremption(t_low, t_target):
-    # Définition des ensembles et paramètres
-    N = 6  # Nombre de centres de collecte (y compris le dépôt)
-    K = 6  # Nombre de camions disponibles
-    Q = 500  # Capacité maximale de chaque camion
-    alpha = 1  # Coût fixe par camion déployé
-
-    locations = np.array([
-        [0, 0],  # Dépôt
-        [2, 3],
-        [5, 2],
-        [1, 4],
-        [6, 5],
-        [3, 2]
-    ])
     stock_file = []  # File d'attente pour gérer la péremption
     stock_ages = []  # Liste pour suivre l'âge des stocks
 
@@ -34,6 +21,10 @@ def complete_sim_with_peremption(t_low, t_target):
     stock_history = []
     recourse_count = []
     peremption = []
+    d_hist = []
+    d_bar = 0
+
+    Q_h = 1300
 
     # Simulation sur une année
     for m in range(1, 13):  # Parcours des mois
@@ -41,9 +32,16 @@ def complete_sim_with_peremption(t_low, t_target):
             # Simulation des disponibilités
             dispo = simulation_disp(N - 1, [6] * (N - 1), m)  # Disponibilités par centre
             dispo = np.insert(dispo, 0, 0)  # Ajouter le dépôt
-            S_min = PFA(sum(stock_file), m, dispo, t_low, t_target)  # Ajustement du seuil minimal
+            if policy=="PFA":
+                S_min = PFA(sum(stock_file), m, dispo, t_low, t_target)  # Ajustement du seuil minimal
+            elif policy =="DL":
+                S_min = direct_lookahead(d_bar,a,b,m)
+
             S_c = 160
             recourse_flag = False
+
+            if sum(stock_file)+S_min > Q_h:
+                S_min = Q_h - (sum(stock_file)+S_min)
 
             # Calcul de la récolte de sang
             r, qt, val_obj = recolte_sang(N, K, Q, S_min, alpha, locations, dispo, False)
@@ -52,10 +50,12 @@ def complete_sim_with_peremption(t_low, t_target):
             stock_file.append(r)  # Ajout de la collecte au stock
             stock_ages.append(0)  # Initialiser l'âge du stock à 0 (semaine courante)
             temp_cost = val_obj
+            temp_mean = 0
 
             # Consommation quotidienne
             for day in range(7):
                 demand_d = int(simulation_demand(1, m))  # Demande quotidienne
+                temp_mean+=demand_d
 
                 # Vérifier si des stocks risquent de périmer (âge > 2 semaines)
                 impending_expiry = any(age > 2 for age in stock_ages)
@@ -105,11 +105,16 @@ def complete_sim_with_peremption(t_low, t_target):
                     stock_ages.pop(i)  # Supprimer l'âge correspondant
                     peremption.append(expired)
                     break  # Sortir de la boucle après avoir enlevé un stock périmé
-
+            
+            d_hist.append(temp_mean)
+            d_bar = np.mean(d_hist)
             # Mise à jour du stock total
             S = sum(stock_file)
+            
             if S == 0:
-                print("STOCK ZERO ERREUR")
+                temp_cost+=60
+                #print("STOCK ZERO ERREUR")
+        
             stock_history.append(S)
 
             if recourse_flag:
@@ -129,22 +134,9 @@ def complete_sim_with_peremption(t_low, t_target):
 
 
 
-def complete_sim_without_peremption(t_low, t_target):
-    # Définition des ensembles et paramètres
-    N = 6  # Nombre de centres de collecte (y compris le dépôt)
-    K = 6  # Nombre de camions disponibles
-    Q = 500  # Capacité maximale de chaque camion
-    alpha = 1  # Coût fixe par camion déployé
+def complete_sim_without_peremption(t_low, t_target,locations,N,K,Q,alpha):
+    
     stock_file = []  # File d'attente pour gérer la péremption
-    locations = np.array([
-        [0, 0],  # Dépôt
-        [2, 3],
-        [5, 2],
-        [1, 4],
-        [6, 5],
-        [3, 2]
-    ])
-
     final_cost = []
     stock_history= []
     recourse_count = []

@@ -1,6 +1,6 @@
 import numpy as np
 
-def generate_instance(demand_type="low_variability", density="medium", trucks=6, capacity=500, alpha=1):
+def generate_instance( density="medium", trucks=6, t_capacity=500, alpha=1):
     # Localisation des centres selon la densité
     if density == "low":
         locations = np.array([
@@ -30,20 +30,6 @@ def generate_instance(demand_type="low_variability", density="medium", trucks=6,
             [3, 2]
         ])
 
-    # Définir les demandes
-    if demand_type == "low_variability":
-        demand = np.full(6, 200)  # Demande fixe
-    elif demand_type == "high_variability":
-        demand = np.random.randint(50, 500, size=6)  # Demande variable
-    else:  # mixed
-        demand = np.array([200, 300, 50, 400, 100, 500])
 
-    # Définir l'instance
-    instance = {
-        "locations": locations,
-        "demand": demand,
-        "num_trucks": trucks,
-        "truck_capacity": capacity,
-        "truck_cost": alpha
-    }
-    return instance
+
+    return locations,len(locations),trucks,t_capacity,alpha
