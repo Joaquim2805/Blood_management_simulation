@@ -30,7 +30,7 @@ def simulation_disp(N, sizes, month):
     # - Printemps/automne : intermediate ≈ 1.0
     
     # Paramètres de base pour la distribution normale
-    base_mean = 110  # Moyenne de base de la disponibilité
+    base_mean = 100  # Moyenne de base de la disponibilité
     base_std = 20    # Écart type de base de la disponibilité
     
     # Calcul des disponibilités

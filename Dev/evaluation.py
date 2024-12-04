@@ -23,6 +23,9 @@ def complete_sim_with_peremption(t_low, t_target,locations,N,K,Q,alpha,policy,a,
     peremption = []
     d_hist = []
     d_bar = 0
+    d_hist2 = []
+    d_bar2 = 0
+
 
     Q_h = 1300
 
@@ -60,11 +63,25 @@ def complete_sim_with_peremption(t_low, t_target,locations,N,K,Q,alpha,policy,a,
                 # Vérifier si des stocks risquent de périmer (âge > 2 semaines)
                 impending_expiry = any(age > 2 for age in stock_ages)
 
+
+
                 if sum(stock_file) >= S_c:  # Si la file de stock n'est pas vide
                     # Si des stocks risquent de périmer, on déclenche une collecte supplémentaire
                     if impending_expiry:
                         recourse_flag = True
-                        S_min2 = PFA(sum(stock_file), m, dispo, t_low, t_target)
+                        if policy == "PFA":
+                            S_min2 = PFA(sum(stock_file), m, dispo, t_low, t_target)
+                        else :
+                            if m in [4,5,6,7,8,9]:
+                                al = -0.4
+                            else :
+                                al=0
+                            S_min2 = demand_d*(7-day) + demand_d*(7-day)*al
+                        
+                        if sum(stock_file)+S_min2 > Q_h:
+                            S_min2 = Q_h - (sum(stock_file)+S_min2)
+
+
                         r2, qt2, val_obj2 = recolte_sang(N, K, Q, S_min2, alpha, locations, dispo, False)
                         temp_cost += val_obj2
                         if r2 - demand_d >= 0:
@@ -90,7 +107,19 @@ def complete_sim_with_peremption(t_low, t_target,locations,N,K,Q,alpha,policy,a,
                 else:
                     # Fonction de recours en cas de stock insuffisant
                     recourse_flag = True
-                    S_min2 = PFA(sum(stock_file), m, dispo, t_low, t_target)
+                    if policy == "PFA":
+                        S_min2 = PFA(sum(stock_file), m, dispo, t_low, t_target)
+                    else :
+                            if m in [4,5,6,7,8,9]:
+                                al = -0.8
+                            else :
+                                al=0
+                            S_min2 = demand_d*(7-day) + demand_d*(7-day)*al
+                        
+
+                    
+
+
                     r2, qt2, val_obj2 = recolte_sang(N, K, Q, S_min2, alpha, locations, dispo, False)
                     temp_cost += val_obj2
                     if r2 - demand_d >= 0:
@@ -112,7 +141,7 @@ def complete_sim_with_peremption(t_low, t_target,locations,N,K,Q,alpha,policy,a,
             S = sum(stock_file)
             
             if S == 0:
-                temp_cost+=60
+                temp_cost+=10
                 #print("STOCK ZERO ERREUR")
         
             stock_history.append(S)
@@ -156,7 +185,7 @@ def complete_sim_without_peremption(t_low, t_target,locations,N,K,Q,alpha):
             #print(f"  Disponibilités : {dispo}")
 
             # Calcul de la récolte de sang
-            r ,qt, val_obj= recolte_sang(N, K, Q, S_min, alpha, locations, dispo, False)
+            r ,qt, val_obj= recolte_sang(N, K, Q, S_min, alpha, locations, dispo, True)
             #print(f"  Sang récolté : {r}")
             #print("Sang collecté dans chaque centre : ",qt)
             #print("Valeur obj finale : ",val_obj)

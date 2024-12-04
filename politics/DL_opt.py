@@ -50,9 +50,3 @@ def optimize_params_by_season(teta_low, teta_target, locations, N, K, Q, alpha, 
     print()  # Pour passer à la ligne après la progression
     return best_params, best_cost
 
-# Exemple d'appel
-best_params, best_cost = optimize_params_by_season(
-    teta_low, teta_target, locations, N, K, Q, alpha, policy
-)
-print("Meilleurs paramètres par saison :", best_params)
-print("Coût associé :", best_cost)
