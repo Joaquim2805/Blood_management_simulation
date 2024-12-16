@@ -48,4 +48,6 @@ Clone the repository and follow the instructions to set up the environment and r
 ```bash
 git clone https://github.com/Joaquim2805/Blood_management_simulation.git
 cd Blood_management_simulation
+pip install -r requirements.txt
+
 ```

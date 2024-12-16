@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 def recolte_sang(N,K,Q,S_min,alpha,locations,dispo,debug):
     
-    debug = True
+    debug = False
     distances = np.linalg.norm(locations[:, np.newaxis] - locations[np.newaxis, :], axis=2)
 
     model = gp.Model("Vehicle Routing Problem with Recourse")
